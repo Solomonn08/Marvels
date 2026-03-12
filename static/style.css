@@ -1,0 +1,276 @@
+/* Add this to the top of your existing style.css */
+
+/* Dark Theme Variables (Your original ones) */
+.dark-theme {
+    --bg: #0b1220;
+    --card: #111827;
+    --soft-card: #0f172a;
+    --border: #1f2937;
+    --primary: #6366f1;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    background: radial-gradient(circle at top, #111827 0%, #0b1220 60%);
+}
+
+/* Light Theme Variables */
+.light-theme {
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --soft-card: #f9fafb;
+    --border: #e5e7eb;
+    --primary: #4f46e5;
+    --text: #1f2937;
+    --muted: #6b7280;
+    background: #f3f4f6; /* Flat background for light mode */
+}
+
+/* Update your existing 'body' selector to use the variable background */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg); /* Changed from gradient to variable */
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+    transition: background 0.3s, color 0.3s; /* Smooth transition */
+}
+
+:root {
+    --bg: #0b1220;
+    --card: #111827;
+    --soft-card: #0f172a;
+    --border: #1f2937;
+    --primary: #6366f1;
+    --primary-soft: rgba(99,102,241,0.15);
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #10b981;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top, #111827 0%, #0b1220 60%);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 760px;
+}
+
+/* HEADER */
+
+header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+header p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* FORM */
+
+.form-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 50px;
+    transition: 0.3s ease;
+}
+
+.form-section:hover {
+    border-color: #2a3441;
+}
+
+.row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+select, textarea {
+    width: 100%;
+    background: var(--soft-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #0f1a2e;
+}
+
+textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+/* PRIMARY BUTTON */
+
+.primary-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.primary-btn:hover {
+    background: #5855eb;
+}
+
+/* REPORT LIST */
+
+.reports {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px;
+    transition: 0.25s ease;
+}
+
+.card:hover {
+    border-color: #2a3441;
+    transform: translateY(-2px);
+}
+
+/* URGENCY ACCENTS */
+
+.card.high {
+    box-shadow: inset 3px 0 0 var(--danger);
+}
+
+.card.medium {
+    box-shadow: inset 3px 0 0 var(--warning);
+}
+
+.card.standard {
+    box-shadow: inset 3px 0 0 var(--success);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.category {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.status {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: var(--soft-card);
+    border: 1px solid var(--border);
+}
+
+.status.pending { color: var(--warning); }
+.status.responding { color: var(--primary); }
+.status.resolved { color: var(--success); opacity: 0.7; }
+
+.description {
+    margin: 12px 0 18px;
+    line-height: 1.6;
+    font-size: 14px;
+    color: #d1d5db;
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-bottom small {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* ACTIONS */
+
+.actions {
+    display: flex;
+    gap: 16px;
+}
+
+.actions a,
+.actions button {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.actions a:hover,
+.actions button:hover {
+    opacity: 0.7;
+}
+
+.actions button.delete {
+    color: var(--danger);
+}
+
+.panic-btn {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    background: #ef4444;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.panic-btn:hover {
+    opacity: 0.85;
+}

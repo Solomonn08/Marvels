@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Edit Report | CrisisHub</title>
+<style>
+body { background: #0f172a; color: white; font-family: 'Inter', sans-serif; padding: 40px; }
+.glass-container { max-width: 600px; margin: auto; background: #1f2937; padding: 30px; border-radius: 20px; border: 1px solid #374151; }
+.form-grid { display: flex; gap: 15px; margin-bottom: 20px; }
+input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #374151; background: #111827; color: white; }
+.btn-primary { background: #6366f1; border: none; padding: 12px 24px; color: white; border-radius: 10px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="glass-container">
+<header>
+<h1>EDIT <span>REPORT #{{ report.id }}</span></h1>
+</header>
+<section class="report-form">
+<form action="/edit/{{ report.id }}" method="POST">
+<div class="form-grid">
+<input type="text" name="category" value="{{ report.category }}" placeholder="Incident Category" required>
+<select name="urgency">
+<option value="Standard" {% if report.urgency == 'Standard' %}selected{% endif %}>Standard Priority</option>
+<option value="Medium" {% if report.urgency == 'Medium' %}selected{% endif %}>Medium Priority</option>
+<option value="High" {% if report.urgency == 'High' %}selected{% endif %}>🚨 High Alert</option>
+</select>
+</div>
+<label style="color:white;display:block;margin-bottom:10px;">Update Details:</label>
+<textarea name="description" placeholder="Provide details..." style="min-height:200px;" required>{{ report.description }}</textarea>
+<div style="margin-top:20px;">
+<button type="submit" class="btn-primary">Save Changes</button>
+<a href="/" style="color:white;margin-left:20px;text-decoration:none;">Cancel</a>
+</div>
+</form>
+</section>
+</div>
+</body>
+</html>
