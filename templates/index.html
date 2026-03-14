@@ -1,197 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CrisisHub | Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<style>
-/* ROOT THEME */
-body.dark-theme { --primary:#6366f1; --success:#10b981; --danger:#ef4444; --warning:#f59e0b; --text:#f3f4f6; --muted:#9ca3af; --card:#1f2937; --soft-card:#111827; --border:#374151; background:#0f172a; color:var(--text);}
-body.light-theme { --primary:#6366f1; --success:#10b981; --danger:#ef4444; --warning:#f59e0b; --text:#111827; --muted:#6b7280; --card:#fff; --soft-card:#f3f4f6; --border:#e5e7eb; background:#f9fafb; color:var(--text);}
-body { font-family:'Inter',sans-serif; margin:0; transition:.3s ease;}
-.container{max-width:1000px;margin:auto;padding:30px;}
-.theme-switch-wrapper{position:fixed;top:20px;right:20px;}
-.theme-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:12px;cursor:pointer;}
-.form-section{background:var(--card);border:1px solid var(--border);padding:30px;border-radius:20px;}
-.row{display:flex;gap:15px;margin-bottom:15px;}
-select, textarea, input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--soft-card);color:var(--text);}
-.card p{word-wrap:break-word;overflow-wrap:break-word;white-space:pre-wrap;}
-.primary-btn{background:var(--primary);border:none;color:white;padding:12px;border-radius:10px;cursor:pointer;}
-.panic-btn{background:var(--danger);color:white;padding:12px;border-radius:10px;text-align:center;text-decoration:none;display:block;}
-#input-map{height:220px;margin:15px 0;border-radius:12px; background: #242f3e;} /* Added bg color for visibility while loading */
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;}
-.map-mini{height:180px;border-radius:12px;margin:15px 0; background: #242f3e;}
-.status-badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
-.status-badge.pending{color:var(--warning);}
-.status-badge.responding{color:var(--primary);}
-.status-badge.resolved{color:var(--success);}
-.btn-action{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--soft-card);color:var(--text);cursor:pointer;}
-.btn-action.delete{color:var(--danger);}
-</style>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skyline Weather</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="backdrop"></div>
+    <main class="page">
+      <header class="hero">
+        <div class="hero-text">
+          <p class="eyebrow">Real-time forecasts</p>
+          <h1>Skyline Weather</h1>
+          <p class="subtitle">
+            Search any city to get current conditions and a 5-day outlook with clean,
+            readable data.
+          </p>
+        </div>
+        <form class="search" id="weather-form">
+          <label for="city">City</label>
+          <div class="search-row">
+            <input
+              id="city"
+              name="city"
+              type="text"
+              placeholder="Example: Austin or London"
+              autocomplete="off"
+              required
+            />
+            <button type="submit">Get Weather</button>
+          </div>
+          <p class="hint">Powered by Open-Meteo data</p>
+        </form>
+      </header>
 
-<div class="theme-switch-wrapper">
-<button class="theme-btn" id="theme-toggle">🌓 Theme</button>
-</div>
+      <section class="status" id="status">
+        <div class="status-card">
+          <p class="status-title">Current conditions</p>
+          <p class="status-value" id="status-location">Search for a city to begin.</p>
+          <p class="status-detail" id="status-description">
+            We will show temperature, wind, and a 5-day trend.
+          </p>
+        </div>
+      </section>
 
-<div class="container">
-<header>
-<h1>CrisisHub.</h1>
-<p>Professional incident response dashboard.</p>
-</header>
+      <section class="grid">
+        <article class="card current">
+          <header>
+            <h2>Right now</h2>
+            <p id="current-timezone">Timezone</p>
+          </header>
+          <div class="current-temp" id="current-temp">--</div>
+          <div class="current-meta">
+            <div>
+              <span class="label">Feels like</span>
+              <span id="current-feels">--</span>
+            </div>
+            <div>
+              <span class="label">Wind</span>
+              <span id="current-wind">--</span>
+            </div>
+            <div>
+              <span class="label">Conditions</span>
+              <span id="current-desc">--</span>
+            </div>
+          </div>
+        </article>
 
-<section class="form-section">
-<form action="{{ url_for('create_report') }}" method="POST">
-<div class="row">
-<input type="text" name="category" placeholder="What is the incident? (e.g. Flood, Medical, Accident)" required>
-<select name="urgency" required>
-<option value="Standard">Standard</option>
-<option value="Medium">Medium</option>
-<option value="High">High</option>
-</select>
-</div>
+        <article class="card forecast">
+          <header>
+            <h2>5-day outlook</h2>
+            <p>Daily highs, lows, precipitation, UV</p>
+          </header>
+          <div class="forecast-list" id="forecast-list">
+            <div class="forecast-placeholder">No data yet.</div>
+          </div>
+        </article>
+      </section>
+    </main>
 
-<textarea name="description" placeholder="Describe situation..." required></textarea>
-
-<div class="row" style="margin-top:15px;">
-<input type="text" id="map-link" placeholder="Paste Google Maps link (optional)">
-<button type="button" class="btn-action" onclick="applyManualLocation()" style="width:200px;">Apply Link</button>
-</div>
-
-<div id="input-map"></div>
-<button type="button" id="get-location" class="btn-action">🎯 Sync GPS</button>
-
-<input type="hidden" name="latitude" id="latitude">
-<input type="hidden" name="longitude" id="longitude">
-
-<br><br>
-<button type="submit" class="primary-btn">Broadcast</button>
-<a href="tel:03" class="panic-btn">🚨 SOS</a>
-</form>
-</section>
-
-<br><br>
- 
-<div class="theme-switch-wrapper">
-    <a href="{{ url_for('logout') }}" style="text-decoration: none; margin-right: 10px;">
-        <button class="theme-btn" style="border-color: var(--danger); color: var(--danger);">Logout</button>
-    </a>
-    <button class="theme-btn" id="theme-toggle">🌓 Theme</button>
-</div> 
-
-<section>
-{% for report in reports %}
-<div class="card">
-<strong>{{ report.category }}</strong>
-<span class="status-badge {{ report.status|lower }}" id="status-pill-{{ report.id }}">{{ report.status }}</span>
-<p>{{ report.description }}</p>
-
-{% if report.latitude and report.longitude %}
-<div id="map-{{ report.id }}" class="map-mini" data-lat="{{ report.latitude }}" data-lng="{{ report.longitude }}"></div>
-{% endif %}
-
-{% if report.status != "Resolved" %}
-<button class="btn-action" onclick="updateStatus('{{ report.id }}')">
-{% if report.status == "Pending" %}Claim{% elif report.status == "Responding" %}Resolve{% endif %}
-</button>
-{% endif %}
-
-<a href="/edit/{{ report.id }}"><button class="btn-action">Edit</button></a>
-
-<form action="{{ url_for('delete_report', id=report.id) }}" method="POST" style="display:inline;">
-<button type="submit" class="btn-action delete">Delete</button>
-</form>
-</div><br>
-{% endfor %}
-</section>
-</div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-// Theme Logic
-const body=document.body;
-body.classList.add(localStorage.getItem("theme")||"dark-theme");
-document.getElementById("theme-toggle").onclick=()=>{
-    const newTheme=body.classList.contains("dark-theme")?"light-theme":"dark-theme";
-    body.classList.remove("dark-theme","light-theme");body.classList.add(newTheme);
-    localStorage.setItem("theme",newTheme);
-}
-
-// Status API Logic
-async function updateStatus(id){
-    const res = await fetch(`/update_status/${id}`,{method:"POST"});
-    const data = await res.json();
-    if(data.success){ location.reload(); }
-}
-
-document.addEventListener("DOMContentLoaded",function(){
-    // Check if map element exists to prevent crash
-    const mapEl = document.getElementById("input-map");
-    if(!mapEl) return;
-
-    const inputMap=L.map("input-map").setView([0,0],2);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(inputMap);
-    let marker;
-
-    function setCoords(lat,lng){
-        document.getElementById("latitude").value=lat;
-        document.getElementById("longitude").value=lng;
-        if(marker) marker.setLatLng([lat,lng]);
-        else marker=L.marker([lat,lng]).addTo(inputMap);
-        inputMap.setView([lat,lng],14);
-    }
-
-    inputMap.on("click",e=>setCoords(e.latlng.lat,e.latlng.lng));
-
-    // FLUX GPS FIX
-    document.getElementById("get-location").onclick=()=>{
-        if (!navigator.geolocation) {
-            alert("Geolocation not supported.");
-            return;
-        }
-        
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 8000, 
-            maximumAge: 0
-        };
-
-        navigator.geolocation.getCurrentPosition(
-            (p) => { setCoords(p.coords.latitude, p.coords.longitude); },
-            (err) => { 
-                console.error(err);
-                alert("GPS Error: " + err.message + "\nTry using http://localhost:5000 instead of 127.0.0.1");
-            },
-            options
-        );
-    };
-
-    window.applyManualLocation=function(){
-        let link=document.getElementById("map-link").value;
-        if(link.includes("@")){
-            try {
-                let coords=link.split("@")[1].split(",");
-                let lat=parseFloat(coords[0]);
-                let lng=parseFloat(coords[1]);
-                if(!isNaN(lat) && !isNaN(lng)) setCoords(lat,lng);
-            } catch(e) { alert("Invalid Google Maps Link Format"); }
-        }
-    };
-
-    // Render Mini Maps for Feed
-    document.querySelectorAll(".map-mini").forEach(el=>{
-        const lat = parseFloat(el.dataset.lat);
-        const lng = parseFloat(el.dataset.lng);
-        if(!isNaN(lat) && !isNaN(lng)){
-            const m=L.map(el.id,{zoomControl:false,attributionControl:false}).setView([lat,lng],15);
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(m);
-            L.marker([lat,lng]).addTo(m);
-        }
-    });
-});
-</script>
-</body>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
 </html>
