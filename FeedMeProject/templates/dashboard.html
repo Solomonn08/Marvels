@@ -1,20 +1,35 @@
-<h2>Welcome, {{ user.username }}!</h2>
-<p>Your Allergies: <strong>{{ user.allergies }}</strong></p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FeedMe - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, {{ user.username }}!</h2>
+        <p>Your Allergies: <strong class="danger-text">{{ user.allergies }}</strong></p>
 
-<h3>The Menu</h3>
-{% for item in menu %}
-<div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-    <h4>{{ item.name }} - ${{ item.price }}</h4>
-    <p>Contains: {{ item.ingredients }}</p>
-    
-    {% if item.status == "DANGER" %}
-        <p style="color: red; font-weight: bold;">⚠️ DANGER: Contains your allergens!</p>
-    {% else %}
-        <p style="color: green;">✅ Safe for you</p>
-    {% endif %}
-    
-    <a href="/build/{{ item.id }}"><button>Customize & Order</button></a>
-</div>
-{% endfor %}
-<hr>
-<a href="/orders">View My Orders</a>
+        <h3>The Menu</h3>
+        <div class="menu-grid">
+            {% for item in menu %}
+            <div class="menu-item">
+                <h4>{{ item.name }} - ${{ item.price }}</h4>
+                <p>Contains: {{ item.ingredients }}</p>
+                
+                {% if item.status == "DANGER" %}
+                    <p class="danger-alert">⚠️ DANGER: Contains your allergens!</p>
+                {% else %}
+                    <p class="safe-badge">✅ Safe for you</p>
+                {% endif %}
+                
+                <a href="/build/{{ item.id }}"><button>Customize & Order</button></a>
+            </div>
+            {% endfor %}
+        </div>
+        <hr>
+        <div class="footer-links">
+            <a href="/orders" class="btn-secondary">View My Orders</a>
+        </div>
+    </div>
+</body>
+</html>
